@@ -246,7 +246,7 @@ speed_type="bios_limit"
 # Example:
 # on:    'i7-6500U (4) @ 3.1GHz'
 # off:   'i7-6500U (4) @ 3.100GHz'
-speed_shorthand="off"
+speed_shorthand="on"
 
 # Enable/Disable CPU brand in output.
 #
@@ -376,7 +376,7 @@ gtk_shorthand="off"
 # Example:
 # on:  'Numix [GTK2], Adwaita [GTK3]'
 # off: 'Adwaita [GTK3]'
-gtk2="on"
+gtk2="off"
 
 # Enable/Disable gtk3 Theme / Icons / Font
 #
@@ -387,7 +387,7 @@ gtk2="on"
 # Example:
 # on:  'Numix [GTK2], Adwaita [GTK3]'
 # off: 'Numix [GTK2]'
-gtk3="on"
+gtk3="off"
 
 
 # IP Address
@@ -469,7 +469,7 @@ disk_show=('/' '/mnt/01DC1191AA8A6940' '/mnt/01DC23506DF48710' '/mnt/01DC2350707
 # none:   'Disk: 74G / 118G (66%)'
 #         'Disk: 74G / 118G (66%)'
 #         'Disk: 74G / 118G (66%)'
-disk_subtitle="dir"
+disk_subtitle="none"
 
 # Disk percent.
 # Show/Hide disk percent.
@@ -692,8 +692,8 @@ col_offset="auto"
 # Example:
 # neofetch --bar_char 'elapsed' 'total'
 # neofetch --bar_char '-' '='
-bar_char_elapsed="-"
-bar_char_total="="
+bar_char_elapsed="█"
+bar_char_total="░"
 
 # Toggle Bar border
 #
@@ -708,7 +708,7 @@ bar_border="on"
 # Default:  '15'
 # Values:   'num'
 # Flag:     --bar_length
-bar_length=15
+bar_length=20
 
 # Progress bar colors
 # When set to distro, uses your distro's logo colors.
@@ -768,7 +768,7 @@ image_backend="kitty"
 # NOTE: 'auto' will pick the best image source for whatever image backend is used.
 #       In ascii mode, distro ascii art will be used and in an image mode, your
 #       wallpaper will be used.
-image_source="images/$(ls images/*.{png,jpg,jpeg} 2>/dev/null | shuf -n 1)"
+image_source="$(dirname $(which neofetch))/images/$(ls $(dirname $(which neofetch))/images/*.{png,jpg,jpeg} 2>/dev/null | shuf -n 1)"
 
 
 # Ascii Options
@@ -852,7 +852,7 @@ ascii_bold="on"
 # Default:  'off'
 # Values:   'on', 'off'
 # Flag:     --loop
-image_loop="off"
+image_loop="on"
 
 # Thumbnail directory
 #
@@ -868,7 +868,7 @@ thumbnail_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/thumbnails/neofetch"
 #
 # See this wiki page to learn about the fit and fill options.
 # https://github.com/dylanaraps/neofetch/wiki/What-is-Waifu-Crop%3F
-crop_mode="normal"
+crop_mode="fit"
 
 # Crop offset
 # Note: Only affects 'normal' crop mode.
@@ -901,7 +901,7 @@ catimg_size="2"
 # Default: '3'
 # Values:  'num', '-num'
 # Flag:    --gap
-gap=3
+gap=10
 
 # Image offsets
 # Only works with the w3m backend.
