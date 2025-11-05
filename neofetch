@@ -754,7 +754,7 @@ disk_display="off"
 #           'viu'
 
 # Flag:     --backend
-image_backend="kitty"
+image_backend="chafa"
 
 # Image Source
 #
