@@ -585,8 +585,8 @@ mpc_args=()
 #
 # Example:
 # colors=(distro)      - Text is colored based on Distro colors.
-# colors=(4 6 1 8 8 6) - Text is colored in the order above.
-colors=(4 6 1 8 8 6)
+# colors=(4 6 1 8 8 6) - Text is colored in the order above. 4 2 1 8 8 6
+colors=(4 2 1 8 8 6)
 
 
 # Text Options
@@ -784,8 +784,7 @@ image_backend="catimg"
 # NOTE: 'auto' will pick the best image source for whatever image backend is used.
 #       In ascii mode, distro ascii art will be used and in an image mode, your
 #       wallpaper will be used.
-image_source="$(ls "/home/safwan/neofetch/images/"/*.{png,jpg,jpeg} 2>/dev/null | shuf -n 1 || true)"
-
+image_source="$(ls "/home/safwan/neofetch/images/"/*.{png,jpg,jpeg} 2>/dev/null  | shuf -n 1 || true)"
 
 # Ascii Options
 
@@ -847,7 +846,7 @@ ascii_distro="auto"
 # Example:
 # ascii_colors=(distro)      - Ascii is colored based on Distro colors.
 # ascii_colors=(4 6 1 8 8 6) - Ascii is colored using these colors.
-ascii_colors=(wal)
+ascii_colors=(4 6 1 8 8 6)
 
 # Bold ascii logo
 # Whether or not to bold the ascii logo.
@@ -905,7 +904,7 @@ crop_offset="center"
 # Avoid aggressive downscaling by default; preserve image native size when
 # possible to improve visual quality. Users who prefer the half-terminal sized
 # thumbnail can set this to 'auto' or a specific size (e.g. '50%').
-image_size="none"
+image_size="auto"
 
 # Catimg block size.
 # Control the resolution of catimg.
@@ -4323,6 +4322,12 @@ get_window_size() {
     fi
 
     term_width="${term_width:-0}"
+
+    if (( term_width < 10 )); then
+        read -r lines columns <<< "$(stty size)"
+        term_width=$((columns * 8))  # Assume ~8px font width; adjust if needed
+        term_height=$((lines * 16))  # Assume ~16px font height; adjust if needed
+    fi
 }
 
 
