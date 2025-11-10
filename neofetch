@@ -4332,55 +4332,66 @@ get_window_size() {
 
 
 get_term_size() {
-    # Get the terminal size in cells.
-    read -r lines columns <<< "$(stty size)"
+    # Get terminal size in characters
+    read -r lines columns < <(stty size 2>/dev/null || echo 24 80)
 
-    # Calculate font size.
-    font_width="$((term_width / columns))"
-    font_height="$((term_height / lines))"
+    # Default font size in pixels (most modern terminals: 9×18 or 8×16)
+    # Adjust only if image is misaligned horizontally/vertically
+    font_width=${font_width:-9}
+    font_height=${font_height:-18}
+
+    # Fallback pixel size when X/Wayland queries fail (Ptyxis, pure Wayland, etc.)
+    if (( term_width < 50 )); then
+        term_width=$(( columns * font_width ))
+        term_height=$(( lines * font_height ))
+    fi
 }
 
 get_image_size() {
-    # This functions determines the size to make the thumbnail image.
+    # Determine thumbnail size
     get_term_size
 
     case $image_size in
         "auto")
-            image_size="$((columns * font_width / 2))"
-            term_height="$((term_height - term_height / 4))"
+            image_size="$(( columns * font_width / 2 ))"
+            term_height="$(( term_height - term_height / 4 ))"
 
-            ((term_height < image_size)) && \
+            (( term_height < image_size )) && \
                 image_size="$term_height"
-        ;;
+            ;;
 
         *"%")
             percent="${image_size/\%}"
-            image_size="$((percent * term_width / 100))"
+            image_size="$(( percent * term_width / 100 ))"
 
-            (((percent * term_height / 50) < image_size)) && \
-                image_size="$((percent * term_height / 100))"
-        ;;
+            (( (percent * term_height / 50) < image_size )) && \
+                image_size="$(( percent * term_height / 100 ))"
+            ;;
 
         "none")
-            # Get image size so that we can do a better crop.
-            read -r width height <<< "$(identify -format "%w %h" "$image")"
+            # Get real image dimensions
+            read -r width height <<< "$(identify -format "%w %h" "$image" 2>/dev/null || echo 0 0)"
 
-            while ((width >= (term_width / 2) || height >= term_height)); do
-                ((width=width/2,height=height/2))
+            while (( width >= (term_width / 2) || height >= term_height )); do
+                (( width = width / 2, height = height / 2 ))
             done
 
             crop_mode="none"
-        ;;
+            ;;
 
         *)  image_size="${image_size/px}" ;;
     esac
 
-    # Check for terminal padding.
+    # Terminal padding for w3m
     [[ "$image_backend" == "w3m" ]] && term_padding
 
+    # Use calculated size if not already set
     width="${width:-$image_size}"
     height="${height:-$image_size}"
-    text_padding="$(((width + padding + xoffset) / font_width + gap))"
+
+    # *** CRITICAL FIX: never divide by zero ***
+    # Safe calculation of text_padding (horizontal gap)
+    text_padding="$(( (width + padding + xoffset) / (${font_width:-9} ? ${font_width:-9} : 9) + gap ))"
 }
 
 make_thumbnail() {
